@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+
+const setupWebsocket = require("./socket");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +14,10 @@ app.get("/health", (req, res) => {
     res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
-    console.log(`rpi-media server listening on http://localhost:${PORT}`);
+const server = http.createServer(app);
+
+setupWebsocket(server);
+
+server.listen(PORT, () => {
+    console.log(`server listening on ${PORT}`);
 });
