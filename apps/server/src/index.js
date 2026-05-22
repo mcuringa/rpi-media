@@ -1,23 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const http = require("http");
+const createApp = require("./app");
 
-const setupWebsocket = require("./socket");
-
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/health", (req, res) => {
-    res.json({ ok: true });
-});
-
-const server = http.createServer(app);
-
-setupWebsocket(server);
+const { server, mediaRoot, kioskRoot } = createApp();
 
 server.listen(PORT, () => {
     console.log(`server listening on ${PORT}`);
+    console.log(`serving media from ${mediaRoot}`);
+    console.log(`serving kiosk from ${kioskRoot}`);
 });
