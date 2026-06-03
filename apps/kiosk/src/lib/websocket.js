@@ -35,14 +35,7 @@ export function resolveServerPath(path) {
 }
 
 export function resolveMediaSrc(mediaType, filename) {
-    const mediaFolders = {
-        image: "img",
-        video: "video",
-        audio: "audio"
-    };
-    const mediaFolder = mediaFolders[mediaType];
-
-    if (!mediaFolder || !filename) {
+    if (!mediaType || !filename) {
         return "";
     }
 
@@ -50,7 +43,7 @@ export function resolveMediaSrc(mediaType, filename) {
         return resolveServerPath(filename);
     }
 
-    return resolveServerPath(`/media/${mediaFolder}/${filename}`);
+    return resolveServerPath(`/media/${filename}`);
 }
 
 export function connectMediaSocket({ onMessage, onStatus }) {

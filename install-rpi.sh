@@ -180,14 +180,13 @@ Kiosk URL:
   ${KIOSK_URL}
 
 Media folders:
-  ${APP_DIR}/apps/kiosk/media/img
-  ${APP_DIR}/apps/kiosk/media/video
-  ${APP_DIR}/apps/kiosk/media/audio
+  ${APP_DIR}/apps/kiosk/media
+  Example: ${APP_DIR}/apps/kiosk/media/maps/title-card.jpg
 
 Trigger examples:
-  curl http://localhost:${PORT}/api/img/d${DISPLAY_ID}/example.jpg
-  curl http://localhost:${PORT}/api/video/d${DISPLAY_ID}/example.mp4
-  curl http://localhost:${PORT}/api/audio/example.mp3
+  curl http://localhost:${PORT}/api/img/d${DISPLAY_ID}/maps/title-card.jpg
+  curl http://localhost:${PORT}/api/video/d${DISPLAY_ID}/maps/intro.mp4
+  curl http://localhost:${PORT}/api/audio/maps/narration.mp3
 
 Reboot to test desktop autostart:
   sudo reboot

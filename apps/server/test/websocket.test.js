@@ -131,7 +131,7 @@ test("image REST triggers broadcast a media event to websocket clients", async (
     await helloMessage;
 
     const mediaMessage = waitForMessage(socket, (message) => message.type === "media");
-    const response = await getJson(`http://127.0.0.1:${port}/api/img/d1/battle-of-brooklyn-1776.jpg`);
+    const response = await getJson(`http://127.0.0.1:${port}/api/img/d1/maps/battle-of-brooklyn-1776.jpg`);
 
     assert.equal(response.ok, true);
     assert.equal(response.listeners, 1);
@@ -146,7 +146,7 @@ test("image REST triggers broadcast a media event to websocket clients", async (
             kind: "img",
             mediaType: "image",
             display: 1,
-            filename: "battle-of-brooklyn-1776.jpg",
+            filename: "maps/battle-of-brooklyn-1776.jpg",
             createdAt: "<timestamp>"
         }
     );
@@ -168,12 +168,12 @@ test("audio REST triggers broadcast display-independent audio events", async () 
     await helloMessage;
 
     const mediaMessage = waitForMessage(socket, (message) => message.type === "media");
-    const response = await getJson(`http://127.0.0.1:${port}/api/audio/old-town.mp3`);
+    const response = await getJson(`http://127.0.0.1:${port}/api/audio/maps/old-town.mp3`);
 
     assert.equal(response.ok, true);
     assert.equal(response.event.kind, "audio");
     assert.equal(response.event.mediaType, "audio");
     assert.equal(response.event.display, null);
-    assert.equal(response.event.filename, "old-town.mp3");
+    assert.equal(response.event.filename, "maps/old-town.mp3");
     assert.deepEqual(await mediaMessage, response.event);
 });
