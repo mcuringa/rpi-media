@@ -30,6 +30,9 @@ apps/kiosk/media/maps/narration.mp3
 Install dependencies:
 
 ```sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 npm --prefix apps/server install
 npm --prefix apps/kiosk install
 ```
@@ -52,6 +55,22 @@ Open the kiosk display URLs:
 - Display 2: `http://localhost:5173/?display=2`
 
 When the kiosk is running through Vite, it still connects to the server at `http://localhost:3000` by default.
+
+## CircuitPython remote
+
+Remote scripts live in `apps/remote` and can be copied to a mounted CircuitPython board:
+
+```sh
+invoke remote --name lux
+```
+
+Push all required CircuitPython libraries to the board first:
+
+```sh
+invoke remote-libs
+```
+
+For the VEML7700 lux sensor, this includes `adafruit_veml7700`. Pass `--circuitpy /path/to/CIRCUITPY` to either command if the drive is not auto-detected.
 
 ## Production build and server
 

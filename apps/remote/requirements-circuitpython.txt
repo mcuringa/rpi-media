@@ -1,0 +1,4 @@
+adafruit_requests
+adafruit_sht31d
+adafruit_veml7700
+neopixel

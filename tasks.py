@@ -12,6 +12,8 @@ from invoke import task
 ROOT = Path(__file__).resolve().parent
 REMOTE_DIR = ROOT / "apps" / "remote"
 CONFIG_LOCAL = REMOTE_DIR / "config.local.py"
+BOOT = REMOTE_DIR / "boot.py"
+REMOTE_REQUIREMENTS = REMOTE_DIR / "requirements-circuitpython.txt"
 SERVER_DIR = ROOT / "apps" / "server"
 CHROMIUM_FLAGS = [
     "--autoplay-policy=no-user-gesture-required",
@@ -70,6 +72,22 @@ def remote_script_path(name: str) -> Path:
         raise ValueError("Remote script must be a .py file.")
 
     return script_path
+
+
+def remote_libraries():
+    if not REMOTE_REQUIREMENTS.exists():
+        raise ValueError(f"Missing CircuitPython requirements: {REMOTE_REQUIREMENTS}")
+
+    libraries = []
+    for line in REMOTE_REQUIREMENTS.read_text().splitlines():
+        library = line.split("#", 1)[0].strip()
+        if library:
+            libraries.append(library)
+
+    if not libraries:
+        raise ValueError(f"No CircuitPython libraries listed in {REMOTE_REQUIREMENTS}")
+
+    return libraries
 
 
 def local_ip_addresses():
@@ -147,12 +165,14 @@ def chromium_args(chromium, port, display_id, fullscreen=False):
 
 @task
 def remote(ctx, name, circuitpy=None):
-    """Copy apps/remote/NAME.py to CIRCUITPY/code.py and config.local.py to config.py."""
+    """Copy apps/remote/NAME.py, config.local.py, and boot.py to CIRCUITPY."""
     del ctx
 
     script_path = remote_script_path(name)
     if not CONFIG_LOCAL.exists():
         raise ValueError(f"Missing local config: {CONFIG_LOCAL}")
+    if not BOOT.exists():
+        raise ValueError(f"Missing boot file: {BOOT}")
 
     circuitpy_path = Path(circuitpy) if circuitpy else find_circuitpy()
     if not circuitpy_path.exists() or not circuitpy_path.is_dir():
@@ -160,12 +180,35 @@ def remote(ctx, name, circuitpy=None):
 
     code_target = circuitpy_path / "code.py"
     config_target = circuitpy_path / "config.py"
+    boot_target = circuitpy_path / "boot.py"
 
     shutil.copy2(script_path, code_target)
     shutil.copy2(CONFIG_LOCAL, config_target)
+    shutil.copy2(BOOT, boot_target)
 
     print(f"Copied {script_path.relative_to(ROOT)} -> {code_target}")
     print(f"Copied {CONFIG_LOCAL.relative_to(ROOT)} -> {config_target}")
+    print(f"Copied {BOOT.relative_to(ROOT)} -> {boot_target}")
+
+
+@task(name="remote-libs")
+def remote_libs(ctx, circuitpy=None):
+    """Install CircuitPython libraries from apps/remote/requirements-circuitpython.txt."""
+    del ctx
+
+    circup = shutil.which("circup")
+    if not circup:
+        raise ValueError("circup was not found. Run: pip install -r requirements.txt")
+
+    circuitpy_path = Path(circuitpy) if circuitpy else find_circuitpy()
+    if not circuitpy_path.exists() or not circuitpy_path.is_dir():
+        raise ValueError(f"CIRCUITPY path is not a directory: {circuitpy_path}")
+
+    libraries = remote_libraries()
+    subprocess.run(
+        [circup, "--path", str(circuitpy_path), "install", *libraries],
+        check=True,
+    )
 
 
 @task(name="start-server")
