@@ -146,3 +146,6 @@ vite.config.ts.timestamp-*
 apps/remote/config.local.py
 __pycache__/
 *.py[cod]
+
+# MacOS-specific files
+.DS_Store
