@@ -15,6 +15,7 @@ CONFIG_LOCAL = REMOTE_DIR / "config.local.py"
 BOOT = REMOTE_DIR / "boot.py"
 REMOTE_REQUIREMENTS = REMOTE_DIR / "requirements-circuitpython.txt"
 SERVER_DIR = ROOT / "apps" / "server"
+KIOSK_DIR = ROOT / "apps" / "kiosk"
 CHROMIUM_FLAGS = [
     "--autoplay-policy=no-user-gesture-required",
     "--disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies",
@@ -108,6 +109,15 @@ def server_environment(port, host):
     if port:
         env["PORT"] = str(port)
     return env
+
+
+def ensure_kiosk_build():
+    dist_index = KIOSK_DIR / "dist" / "index.html"
+    if dist_index.exists():
+        return
+
+    print("Missing kiosk build. Running: npm run build")
+    subprocess.run(["npm", "run", "build"], cwd=KIOSK_DIR, check=True)
 
 
 def print_kiosk_urls(port):
@@ -218,6 +228,9 @@ def start_server(ctx, dev=False, port=None, host="0.0.0.0"):
     server_port = str(port or 3000)
     env = server_environment(port, host)
 
+    if not dev:
+        ensure_kiosk_build()
+
     print_kiosk_urls(server_port)
 
     with ctx.cd(SERVER_DIR):
@@ -233,6 +246,9 @@ def start_all(ctx, dev=False, port=None, host="0.0.0.0", chromium=None, fullscre
     npm_command = ["npm", "run", "dev"] if dev else ["npm", "start"]
     env = server_environment(port, host)
     chromium_path = find_chromium(chromium)
+
+    if not dev:
+        ensure_kiosk_build()
 
     print_kiosk_urls(server_port)
     print(f"Starting server: {' '.join(npm_command)}")
