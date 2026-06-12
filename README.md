@@ -154,7 +154,7 @@ xset s off
 xset -dpms
 xset s noblank
 unclutter -idle 0.5 -root &
-chromium-browser \
+chromium \
   --kiosk \
   --autoplay-policy=no-user-gesture-required \
   --disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies \
@@ -165,12 +165,11 @@ chromium-browser \
   "http://localhost:3000/?display=1"
 ```
 
-Use `chromium` instead of `chromium-browser` if that is the binary installed on your Pi.
 
 Display 2:
 
 ```sh
-chromium-browser \
+chromium \
   --kiosk \
   --autoplay-policy=no-user-gesture-required \
   --disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies \

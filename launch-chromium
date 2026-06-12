@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PORT="${PORT:-3000}"
+HOST="${HOST:-localhost}"
+BASE_URL="${BASE_URL:-http://${HOST}:${PORT}}"
+
+CHROMIUM_FLAGS=(
+  --autoplay-policy=no-user-gesture-required
+  --disable-features=PreloadMediaEngagementData,MediaEngagementBypassAutoplayPolicies
+  --noerrdialogs
+  --disable-infobars
+  --disable-session-crashed-bubble
+  --check-for-update-interval=31536000
+  --no-first-run
+)
+
+xset s off >/dev/null 2>&1 || true
+xset -dpms >/dev/null 2>&1 || true
+xset s noblank >/dev/null 2>&1 || true
+
+chromium \
+  "--user-data-dir=/tmp/rpi-media-chromium-d1" \
+  "${CHROMIUM_FLAGS[@]}" \
+  "${BASE_URL}/?display=1" &
+
+chromium \
+  "--user-data-dir=/tmp/rpi-media-chromium-d2" \
+  "${CHROMIUM_FLAGS[@]}" \
+  "${BASE_URL}/?display=2" &
+
+wait
