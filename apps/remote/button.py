@@ -1,5 +1,6 @@
 # button.py
 # Press a button wired between A0 and GND to trigger video playback.
+# Turn on an 8-pixel NeoPixel strip wired to A1 at startup.
 
 import time
 
@@ -14,6 +15,10 @@ import config
 
 
 BUTTON_PIN = board.A0
+LED_STRIP_PIN = board.A1
+LED_STRIP_COUNT = 150
+LED_STRIP_ACTIVE_COUNT = 50
+LED_STRIP_COLOR = (255, 255, 255)
 DISPLAY = 1
 VIDEO_PATH = "test/spike.mp4"
 DEBOUNCE_SECONDS = 0.05
@@ -23,7 +28,8 @@ RETRIGGER_DELAY_SECONDS = 0.5
 server = config.media_url
 trigger_url = f"{server}/api/video/d{DISPLAY}/{VIDEO_PATH}"
 
-pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.3)
+pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.6)
+led_strip = neopixel.NeoPixel(LED_STRIP_PIN, LED_STRIP_COUNT, brightness=0.6)
 button = digitalio.DigitalInOut(BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP
@@ -31,6 +37,13 @@ button.pull = digitalio.Pull.UP
 
 def set_status(color):
     pixel[0] = color
+
+
+def turn_on_led_strip():
+    led_strip.fill((0, 0, 0))
+    for index in range(LED_STRIP_ACTIVE_COUNT):
+        led_strip[index] = LED_STRIP_COLOR
+    print("LED strip on:", LED_STRIP_ACTIVE_COUNT, "of", LED_STRIP_COUNT, "pixels on", LED_STRIP_PIN)
 
 
 def connect_wifi():
@@ -59,6 +72,8 @@ def send_video_trigger(session):
 
     set_status((0, 255, 0))
 
+
+turn_on_led_strip()
 
 try:
     connect_wifi()
