@@ -1,6 +1,6 @@
 # button.py
 # Press a button wired between A0 and GND to trigger video playback.
-# Turn on an 8-pixel NeoPixel strip wired to A1 at startup.
+# Turn on a NeoPixel strip wired to A3 at startup.
 
 import time
 
@@ -15,7 +15,7 @@ import config
 
 
 BUTTON_PIN = board.A0
-LED_STRIP_PIN = board.A1
+LED_STRIP_PIN = board.A3
 LED_STRIP_COUNT = 23
 LED_STRIP_ACTIVE_COUNT = 23
 LED_STRIP_COLOR = (255, 255, 255)
@@ -33,7 +33,6 @@ led_strip = neopixel.NeoPixel(LED_STRIP_PIN, LED_STRIP_COUNT, brightness=0.6)
 button = digitalio.DigitalInOut(BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP
-
 
 def set_status(color):
     pixel[0] = color

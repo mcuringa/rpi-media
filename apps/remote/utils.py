@@ -10,7 +10,7 @@ server = config.media_url
 print("Media server at:", server)
 
 print("Connecting to WiFi...")
-print(config.ssid, config.wifi_password)
+print("SSID:", config.ssid)
 pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.3)
 
 
