@@ -26,7 +26,6 @@ RETRIGGER_DELAY_SECONDS = 0.5
 
 
 server = config.media_url
-trigger_url = f"{server}/api/video/d{DISPLAY}/{VIDEO_PATH}"
 
 pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.6)
 led_strip = neopixel.NeoPixel(LED_STRIP_PIN, LED_STRIP_COUNT, brightness=0.6)
@@ -56,18 +55,27 @@ def connect_wifi():
     set_status((0, 255, 0))
 
 
-def send_video_trigger(session):
-    print("Triggering video:", trigger_url)
+def send_media_trigger(session):
+    print("button pressed")
+    delay = 5
+
     set_status((255, 80, 0))
 
-    response = session.get(trigger_url)
-    try:
-        print("Server response:", response.status_code)
-        if response.status_code < 200 or response.status_code >= 300:
-            set_status((255, 0, 0))
-            return
-    finally:
-        response.close()
+
+    session.get(f"{server}/api/video/d1/riots/news.mp4")
+    # get the time the video starts
+    start_time = time.time()
+
+    # end time is start_time + 5 minutes 20 seconds
+    max_loops = 10
+    end_time = start_time + 5 * 60 + 20
+    loop_count = 0
+    while time.time() <= end_time and loop_count < max_loops:
+        session.get(f"{server}/api/img/d2/riots/flag.jpg")
+        time.sleep(delay)
+        session.get(f"{server}/api/img/d2/riots/looted.jpg")
+        time.sleep(delay)
+        loop_count += 1
 
     set_status((0, 255, 0))
 
@@ -110,7 +118,7 @@ while True:
 
         if pressed and armed:
             try:
-                send_video_trigger(session)
+                send_media_trigger(session)
             except Exception as error:
                 print("Failed to trigger video:", error)
                 set_status((255, 0, 0))
