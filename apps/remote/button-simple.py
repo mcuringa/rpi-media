@@ -28,7 +28,7 @@ button.pull = digitalio.Pull.UP
 
 led = digitalio.DigitalInOut(LED_PIN)
 led.direction = digitalio.Direction.OUTPUT
-led.value = False
+led.value = True
 
 
 print("Simple button LED ready")
