@@ -30,8 +30,7 @@ apps/kiosk/media/maps/narration.mp3
 Install dependencies:
 
 ```sh
-python3 -m venv .venv
-source .venv/bin/activate
+source /home/mxc/.virtualenvs/rpimedia/bin/activate
 pip install -r requirements.txt
 npm --prefix apps/server install
 npm --prefix apps/kiosk install
@@ -69,6 +68,8 @@ Push all required CircuitPython libraries to the board first:
 ```sh
 invoke remote-libs
 ```
+
+Add CircuitPython dependencies for remote scripts to `apps/remote/requirements-circuitpython.txt`; `invoke remote-libs` installs that list onto the QtPy.
 
 For the VEML7700 lux sensor, this includes `adafruit_veml7700`. Pass `--circuitpy /path/to/CIRCUITPY` to either command if the drive is not auto-detected.
 

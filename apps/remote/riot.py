@@ -19,6 +19,13 @@ LED_STRIP_PIN = board.A3
 LED_STRIP_COUNT = 23
 LED_STRIP_ACTIVE_COUNT = 23
 LED_STRIP_COLOR = (255, 255, 255)
+RACE_SEQUENCE_LOOPS = 3
+RACE_SEQUENCE_DELAY_SECONDS = 0.04
+RACE_SEQUENCE_COLORS = (
+    (255, 255, 255),
+    (255, 120, 0),
+    (90, 25, 0),
+)
 DISPLAY = 1
 VIDEO_PATH = "test/spike.mp4"
 DEBOUNCE_SECONDS = 0.05
@@ -28,7 +35,12 @@ RETRIGGER_DELAY_SECONDS = 0.5
 server = config.media_url
 
 pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.6)
-led_strip = neopixel.NeoPixel(LED_STRIP_PIN, LED_STRIP_COUNT, brightness=0.6)
+led_strip = neopixel.NeoPixel(
+    LED_STRIP_PIN,
+    LED_STRIP_COUNT,
+    brightness=0.6,
+    auto_write=False,
+)
 button = digitalio.DigitalInOut(BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP
@@ -42,8 +54,26 @@ def turn_on_led_strip():
     led_strip.fill((0, 0, 0))
     for index in range(LED_STRIP_ACTIVE_COUNT):
         led_strip[index] = LED_STRIP_COLOR
+    led_strip.show()
     print("LED strip on:", LED_STRIP_ACTIVE_COUNT, "of",
           LED_STRIP_COUNT, "pixels on", LED_STRIP_PIN)
+
+
+def run_race_sequence():
+    print("Running race sequence:", RACE_SEQUENCE_LOOPS, "loops")
+    active_count = min(LED_STRIP_ACTIVE_COUNT, LED_STRIP_COUNT)
+
+    for _ in range(RACE_SEQUENCE_LOOPS):
+        for lead_index in range(active_count):
+            led_strip.fill((0, 0, 0))
+
+            for offset, color in enumerate(RACE_SEQUENCE_COLORS):
+                led_strip[(lead_index - offset) % active_count] = color
+
+            led_strip.show()
+            time.sleep(RACE_SEQUENCE_DELAY_SECONDS)
+
+    turn_on_led_strip()
 
 
 def connect_wifi():
@@ -62,6 +92,7 @@ def send_media_trigger(session):
     delay = 5
 
     set_status((255, 80, 0))
+    run_race_sequence()
 
     session.get(f"{server}/api/video/d1/riots/news.mp4")
     # get the time the video starts
