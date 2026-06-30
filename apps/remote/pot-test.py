@@ -21,7 +21,13 @@ def voltage(pin):
     # Convert 16-bit ADC reading to voltage (approximate); adjust Vref if needed
     return (pin.value * 3.3) / 65535.0
 
-
+#Write function that starts video, ask it to stop listening to pot 
+# while video is running, then restart listening after video is done.
+def start_video():
+    # Placeholder for starting video recording or playback
+    #placeholder for stoping the listening of pot
+    #placeholder for restarting the listening of pot after video is done
+    return()
 
 
 set_status((0, 255, 0))
@@ -39,11 +45,13 @@ try:
         v = voltage(pot)
         print(f"Value: {val}  Voltage: {v:.3f} V")
         time.sleep(READ_DELAY)
-        if abs(v - past_v) > 0.5:
+        if abs(v - past_v) > 0.5: #Currently 0.5 threshold, lower/raise to change sensitivity
             set_status((255, 0, 0))
+            # HERE IS WHERE YOU START AUDIO/VISUAL
         else:
             set_status((0, 255, 0))
         past_v = v
+
         
 except KeyboardInterrupt:
     set_status((0, 0, 0))
