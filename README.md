@@ -25,7 +25,7 @@ apps/kiosk/media/maps/intro.mp4
 apps/kiosk/media/maps/narration.mp3
 ```
 
-## Local run
+## Local development
 
 Install dependencies:
 
@@ -36,36 +36,24 @@ npm --prefix apps/server install
 npm --prefix apps/kiosk install
 ```
 
-Build the kiosk static files:
-
-```sh
-npm --prefix apps/kiosk run build
-```
-
-Start the server on port `3000`:
+Start the API/WebSocket server on port `3000`:
 
 ```sh
 npm --prefix apps/server run dev
 ```
 
+In another terminal, start the kiosk frontend with Vite:
+
+```sh
+npm --prefix apps/kiosk run dev
+```
+
 Open the kiosk display URLs:
 
-- Display 1: `http://localhost:3000/?display=1`
-- Display 2: `http://localhost:3000/?display=2`
+- Display 1: `http://localhost:5173/?display=1`
+- Display 2: `http://localhost:5173/?display=2`
 
-Or use the project task, which builds the kiosk if needed and prints the display URLs:
-
-```sh
-invoke start-server
-```
-
-To start the server and launch both Chromium displays:
-
-```sh
-invoke start-all
-```
-
-`invoke start-all` detects Chromium from apt, Google Chrome, or the `org.chromium.Chromium` Flatpak.
+When the kiosk is running through Vite, it still connects to the server at `http://localhost:3000` by default.
 
 ## CircuitPython remote
 

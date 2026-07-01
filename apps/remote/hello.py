@@ -1,40 +1,20 @@
-# hello media test
-
-import adafruit_requests
-import socketpool
-import wifi
+import board
+import neopixel
 import time
+print("Hello, world")
 
-import config
+pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.3)
 
-print("Running hello.py")
-
-VIDEO_PATH = "test/spike.mp4"
-
-server = config.media_url
-
-
-def connect_wifi():
-    print("Connecting to WiFi...")
-    print("SSID:", config.ssid)
-    print("Password:", config.wifi_password)
-
-    wifi.radio.connect(config.ssid, config.wifi_password)
-    print("Connected!")
-    print("IP address:", wifi.radio.ipv4_address)
-
-
-connect_wifi()
-
-pool = socketpool.SocketPool(wifi.radio)
-session = adafruit_requests.Session(pool)
-
-url = f"{server}/api/video/d1/{VIDEO_PATH}"
-print("Triggering:", url)
-response = session.get(url)
-print("Response:", response.status_code)
-print(response.text)
-response.close()
-
-while True:
-    time.sleep(1)
+# Set color (R, G, B)
+try:
+    while True:
+        pixel[0] = (0, 255, 0)
+        time.sleep(.5)
+        pixel[0] = (255, 0, 0)
+        time.sleep(.5)
+        pixel[0] = (0, 0, 255)
+        time.sleep(.5)
+        pixel[0] = (0, 0, 0)
+        time.sleep(.5)
+except Exception as e:
+    print("Something went wrong:", e)

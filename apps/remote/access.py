@@ -10,7 +10,6 @@ import neopixel
 import config
 
 
-
 print("Running access")
 
 BUTTON_PIN = board.A0
