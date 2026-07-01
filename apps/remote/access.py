@@ -1,15 +1,13 @@
-# hello media test
+# access media test
 
+import time
 import adafruit_requests
 import socketpool
 import wifi
-import time
 
 import config
+print("Running access NEW")
 
-print("Running hello.py")
-
-VIDEO_PATH = "test/spike.mp4"
 
 server = config.media_url
 
@@ -17,7 +15,6 @@ server = config.media_url
 def connect_wifi():
     print("Connecting to WiFi...")
     print("SSID:", config.ssid)
-    print("Password:", config.wifi_password)
 
     wifi.radio.connect(config.ssid, config.wifi_password)
     print("Connected!")
@@ -29,12 +26,25 @@ connect_wifi()
 pool = socketpool.SocketPool(wifi.radio)
 session = adafruit_requests.Session(pool)
 
-url = f"{server}/api/video/d1/{VIDEO_PATH}"
+url = f"{server}/api/video/d1/access/ny1-segment.mp4"
 print("Triggering:", url)
-response = session.get(url)
-print("Response:", response.status_code)
-print(response.text)
-response.close()
+
+for attempt in range(3):
+    response = None
+
+    try:
+        response = session.get(url, headers={"Connection": "close"})
+        print("Response:", response.status_code)
+        break
+    except OSError as error:
+        print("Request failed:", error)
+        time.sleep(1)
+    finally:
+        if response:
+            response.close()
+
+
+print("Done")
 
 while True:
     time.sleep(1)

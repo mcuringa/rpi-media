@@ -26,6 +26,7 @@ CHROMIUM_FLAGS = [
     "--check-for-update-interval=31536000",
     "--no-first-run",
 ]
+CHROMIUM_FLATPAK_ID = "org.chromium.Chromium"
 
 
 def find_circuitpy() -> Path:
@@ -135,14 +136,28 @@ def print_kiosk_urls(port):
 
 def find_chromium(chromium=None):
     if chromium:
-        return chromium
+        return [chromium]
 
     for command in ("chromium-browser", "chromium", "google-chrome", "google-chrome-stable"):
         path = shutil.which(command)
         if path:
-            return path
+            return [path]
 
-    raise ValueError("Could not find Chromium. Pass --chromium /path/to/chromium.")
+    flatpak = shutil.which("flatpak")
+    if flatpak:
+        installed = subprocess.run(
+            [flatpak, "info", CHROMIUM_FLATPAK_ID],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if installed.returncode == 0:
+            return [flatpak, "run", CHROMIUM_FLATPAK_ID]
+
+    raise ValueError(
+        "Could not find Chromium. Pass --chromium /path/to/chromium, "
+        f"or install the {CHROMIUM_FLATPAK_ID} Flatpak."
+    )
 
 
 def wait_for_server(port, timeout=10):
@@ -166,7 +181,7 @@ def chromium_args(chromium, port, display_id, fullscreen=False):
     fullscreen_flags = ["--kiosk"] if fullscreen else []
 
     return [
-        chromium,
+        *chromium,
         f"--user-data-dir={profile_dir}",
         *CHROMIUM_FLAGS,
         *fullscreen_flags,
