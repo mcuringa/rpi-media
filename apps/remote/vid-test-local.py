@@ -6,5 +6,7 @@ server = "http://localhost:3000"
 
 delay = 5
 
-# start NAS
+# play spike.mp4 on display 1
 requests.get(f"{server}/api/vid/test/spike.mp4")
+
+
