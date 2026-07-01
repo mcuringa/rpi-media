@@ -16,12 +16,36 @@ import neopixel
 
 POT_PIN = board.A3
 READ_DELAY = 0.2
+WATER_LED_PIN = board.A0
+WATER_LED_COUNT = 15
+WATER_LED_BRIGHTNESS = 0.35
+WATER_LED_COLOR = (0, 80, 255)
 
 status_pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.1)
+water_pixels = neopixel.NeoPixel(
+    WATER_LED_PIN,
+    WATER_LED_COUNT,
+    brightness=WATER_LED_BRIGHTNESS,
+    auto_write=False,
+)
 
 
 def set_status(color):
     status_pixel[0] = color
+
+
+def faucet_lights(duration=None, color=WATER_LED_COLOR):
+    if duration is None:
+        duration = vid_time
+
+    wait = duration / WATER_LED_COUNT
+    water_pixels.fill((0, 0, 0))
+    water_pixels.show()
+
+    for index in range(WATER_LED_COUNT):
+        water_pixels[index] = color
+        water_pixels.show()
+        time.sleep(wait)
 
 
 def voltage(pin):
@@ -78,7 +102,7 @@ try:
         if abs(v - past_v) > 0.5: #Currently 0.5 threshold, lower/raise to change sensitivity
             set_status((255, 0, 0))
             start_video()
-            time.sleep(vid_time)
+            faucet_lights(vid_time)
         else:
             set_status((0, 255, 0))
         past_v = v
@@ -87,4 +111,5 @@ try:
 except KeyboardInterrupt:
     set_status((0, 0, 0))
     status_pixel.deinit()
+    water_pixels.deinit()
     pot.deinit()
