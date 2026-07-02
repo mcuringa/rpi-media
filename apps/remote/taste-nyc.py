@@ -12,12 +12,9 @@ import socketpool
 import wifi
 
 import config
-
+print("running Taste NYC")
 
 BUTTON_PIN = board.A0
-LED_STRIP_PIN = board.A3
-LED_STRIP_COUNT = 5
-LED_BRIGHTNESS = 0.6
 DISPLAY = 1
 DEBOUNCE_SECONDS = 0.05
 RETRIGGER_DELAY_SECONDS = 0.5
@@ -30,48 +27,20 @@ VIDEOS = (
     "tastes/tastes-5.mov",
 )
 
-#the LED colors can be changed here, but are currently set to all white
-LED_COLORS = (
-    (255, 255, 255),
-    (255, 255, 255),
-    (255, 255, 255),
-    (255, 255, 255),
-    (255, 255, 255),
-)
-
-
 server = config.media_url
 
-region_pixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.6)
-led_strip = neopixel.NeoPixel(
-    LED_STRIP_PIN,
-    LED_STRIP_COUNT,
-    brightness=LED_BRIGHTNESS,
-    auto_write=False,
-)
 button = digitalio.DigitalInOut(BUTTON_PIN)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP
 
-
-def set_status(color):
-    region_pixel[0] = color
-
-
-def show_selected_video(index):
-    led_strip.fill((0, 0, 0))
-    led_strip[index] = LED_COLORS[index]
-    led_strip.show()
-
+print("Button on Pin A0")
 
 def connect_wifi():
     print("Connecting to WiFi...")
-    set_status((0, 0, 255))
 
     wifi.radio.connect(config.ssid, config.wifi_password)
     print("Connected!")
     print("IP address:", wifi.radio.ipv4_address)
-    set_status((0, 255, 0))
 
 
 def trigger_video(session, index):
@@ -79,31 +48,20 @@ def trigger_video(session, index):
     trigger_url = f"{server}/api/video/d{DISPLAY}/{video_path}"
 
     print("Triggering video", index + 1, "of", len(VIDEOS), ":", video_path)
-    show_selected_video(index)
-    set_status((255, 80, 0))
+    print(f"curl {trigger_url}")
+
 
     response = session.get(trigger_url)
     response.close()
 
-    set_status((0, 255, 0))
-
-
-led_strip.fill((0, 0, 0))
-led_strip.show()
-
-try:
-    connect_wifi()
-except Exception as error:
-    print("Failed to connect:", error)
-    set_status((255, 0, 0))
-    raise
+connect_wifi()
+print("Connected.")
 
 pool = socketpool.SocketPool(wifi.radio)
 session = adafruit_requests.Session(pool)
 
 print("Taste NYC remote ready")
 print("Button pin:", BUTTON_PIN)
-print("LED strip pin:", LED_STRIP_PIN)
 print("Video count:", len(VIDEOS))
 
 selected_index = -1
@@ -125,7 +83,6 @@ while True:
         if not pressed and not armed:
             armed = True
             print("Button released; trigger armed.")
-            set_status((0, 255, 0))
 
         if pressed and armed:
             selected_index = (selected_index + 1) % len(VIDEOS)
@@ -134,9 +91,7 @@ while True:
                 trigger_video(session, selected_index)
             except Exception as error:
                 print("Failed to trigger video:", error)
-                set_status((255, 0, 0))
                 time.sleep(1)
-                set_status((0, 255, 0))
 
             time.sleep(RETRIGGER_DELAY_SECONDS)
 

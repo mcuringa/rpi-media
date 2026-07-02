@@ -16,7 +16,11 @@ print("running our city")
 i2c = board.STEMMA_I2C()
 sensor = adafruit_veml7700.VEML7700(i2c)
 print("Light sensor initialized:", sensor.lux, "lux")
-min_lux = 200
+min_lux = 150
+
+print("Ambient light:", sensor.lux, "lux")
+print("Minimum lux threshold:", min_lux, "lux")
+time.sleep(1)
 
 
 server = config.media_url
@@ -32,10 +36,14 @@ def connect_wifi():
 connect_wifi()
 pool = socketpool.SocketPool(wifi.radio)
 session = adafruit_requests.Session(pool)
-url = f"{server}/api/audio/d1/audio/test/old-town.mp3"
-# url = f"{server}/api/video/d1/riots/news.mp4"
+url = f"{server}/api/audio/ourcity/ourcity.mp3" 
+
+# test_img = f"{server}/api/img/d1/test/color-test.jpg"     
+# session.get(test_img, headers={"Connection": "close"})
+# print("Test Image URL:", test_img)
 
 print("Our City Audio URL:", url)
+
 lux = sensor.lux
 
 while True:
