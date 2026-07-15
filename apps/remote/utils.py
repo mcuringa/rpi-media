@@ -2,7 +2,7 @@ import wifi
 import board
 import neopixel
 import config
-import adafruit_requests as requests
+import adafruit_requests
 import socketpool
 import time
 
@@ -38,4 +38,4 @@ def connect_wifi():
 
 def get_requests():
     pool = socketpool.SocketPool(wifi.radio)
-    return requests.Session(pool)
+    return adafruit_requests.Session(pool)
