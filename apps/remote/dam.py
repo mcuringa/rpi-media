@@ -1,24 +1,29 @@
 # the dam group
-# Continuously read a potentiometer wired to A0 and print its value.
+# Continuously read a potentiometer wired to A3 and print its value.
 
 import time
-import adafruit_requests
-import socketpool
-import wifi
 
 import config
 import board
 import analogio
 import neopixel
+import utils
+
+print("Running dam")
+
+print("connecting wifi...")
+utils.connect_wifi()
+requests = utils.get_requests()
+print("requests ready")
 
 # max: 2.575
 # min: .02
 
-POT_PIN = board.A0
+POT_PIN = board.A3
 READ_DELAY = 0.2
-WATER_LED_PIN = board.A3
+WATER_LED_PIN = board.A0
 WATER_LED_COUNT = 23
-WATER_LED_BRIGHTNESS = 0.35
+WATER_LED_BRIGHTNESS = 1
 WATER_LED_COLOR = (0, 80, 255)
 WATER_LED_INACTIVE_COLOR = (0, 2, 8)
 WATER_LED_FADE_TIME = 1.0
@@ -107,30 +112,13 @@ def voltage(pin):
 server = config.media_url
 
 
-def connect_wifi():
-    print("Connecting to WiFi...")
-    print("SSID:", config.ssid)
-
-    wifi.radio.connect(config.ssid, config.wifi_password)
-    print("Connected!")
-    print("IP address:", wifi.radio.ipv4_address)
-    pool = socketpool.SocketPool(wifi.radio)
-
-
-    session = adafruit_requests.Session(pool)
-    return session
-
-
-requests = connect_wifi()
-
-
-
 def start_audio():
     print("sending audio request")
     url = f"{server}/api/audio/dam/water.mp3"
     print("curl", url)
     response = requests.get(url, headers={"Connection": "close"})
     print("Response:", response.status_code)
+    response.close()
 
 
 
