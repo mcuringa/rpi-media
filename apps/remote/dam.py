@@ -14,9 +14,9 @@ import neopixel
 # max: 2.575
 # min: .02
 
-POT_PIN = board.A3
+POT_PIN = board.A0
 READ_DELAY = 0.2
-WATER_LED_PIN = board.A0
+WATER_LED_PIN = board.A3
 WATER_LED_COUNT = 23
 WATER_LED_ACTIVE_MAX = 0.35
 WATER_LED_COLOR = (0, 80, 255)
