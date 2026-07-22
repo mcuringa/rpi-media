@@ -38,6 +38,11 @@ export default function App() {
     useEffect(() => {
         return connectMediaSocket({
             onMessage: (event) => {
+                if (event.type === "clear" && Number(event.display) === displayId) {
+                    setVisualMedia(null);
+                    return;
+                }
+
                 if (!isMediaEvent(event) || !eventMatchesDisplay(event, displayId)) {
                     return;
                 }

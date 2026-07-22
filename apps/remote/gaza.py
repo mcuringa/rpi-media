@@ -41,7 +41,7 @@ turn_on_led_strip()
 i2c = board.STEMMA_I2C()
 sensor = adafruit_veml7700.VEML7700(i2c)
 print("Light sensor initialized:", sensor.lux, "lux")
-min_lux = 150
+min_lux = 100
 
 print("Ambient light:", sensor.lux, "lux")
 print("Minimum lux threshold:", min_lux, "lux")
@@ -65,6 +65,7 @@ pool = socketpool.SocketPool(wifi.radio)
 session = adafruit_requests.Session(pool)
 protest = f"{server}/api/video/d1/gaza/protest.mp4"
 stats = f"{server}/api/img/d2/gaza/stats.gif"
+clear_stats = f"{server}/api/clear/d2"
 
 # test_img = f"{server}/api/img/d1/test/color-test.jpg"
 # session.get(test_img, headers={"Connection": "close"})
@@ -83,5 +84,7 @@ while True:
         response = session.get(stats)
 
         time.sleep(30)
+        response = session.get(clear_stats)
+        print("Clear display response:", response.status_code)
     lux = sensor.lux
     time.sleep(.1)

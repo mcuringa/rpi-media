@@ -1,6 +1,4 @@
-# the dam group
-# Continuously read a potentiometer wired to A0 and print its value.
-
+# light switch code, will be moving out
 import time
 import adafruit_requests
 import socketpool
