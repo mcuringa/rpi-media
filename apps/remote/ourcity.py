@@ -16,7 +16,7 @@ print("running our city")
 i2c = board.STEMMA_I2C()
 sensor = adafruit_veml7700.VEML7700(i2c)
 print("Light sensor initialized:", sensor.lux, "lux")
-min_lux = 150
+min_lux = 100
 
 print("Ambient light:", sensor.lux, "lux")
 print("Minimum lux threshold:", min_lux, "lux")

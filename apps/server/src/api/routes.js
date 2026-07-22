@@ -7,6 +7,7 @@ const mediaKinds = new Map([
 ]);
 const displayMediaPathPattern = /^\/(img|video)\/d(\d+)\/(.+)$/;
 const audioMediaPathPattern = /^\/audio\/(.+)$/;
+const clearDisplayPathPattern = /^\/clear\/d(\d+)$/;
 
 function cleanMediaPath(value) {
     return value
@@ -44,6 +45,17 @@ function sendMediaEvent(req, res, event) {
 
 module.exports = function createApiRouter() {
     const router = express.Router();
+
+    router.all(clearDisplayPathPattern, (req, res) => {
+        const [, display] = req.path.match(clearDisplayPathPattern);
+        const event = {
+            type: "clear",
+            display: Number(display),
+            createdAt: new Date().toISOString()
+        };
+
+        sendMediaEvent(req, res, event);
+    });
 
     router.all(displayMediaPathPattern, (req, res) => {
         const [, kind, display, mediaPath] = req.path.match(displayMediaPathPattern);

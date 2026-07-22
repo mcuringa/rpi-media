@@ -177,3 +177,26 @@ test("audio REST triggers broadcast display-independent audio events", async () 
     assert.equal(response.event.filename, "maps/old-town.mp3");
     assert.deepEqual(await mediaMessage, response.event);
 });
+
+test("clear REST triggers broadcast a display-targeted clear event", async () => {
+    const { server } = createApp();
+    openServers.push(server);
+
+    const port = await listen(server);
+    const socket = new WebSocket(`ws://127.0.0.1:${port}`);
+    openSockets.push(socket);
+
+    const helloMessage = waitForMessage(socket, (message) => message.type === "hello");
+    await waitForSocketOpen(socket);
+    await helloMessage;
+
+    const clearMessage = waitForMessage(socket, (message) => message.type === "clear");
+    const response = await getJson(`http://127.0.0.1:${port}/api/clear/d2`);
+
+    assert.equal(response.ok, true);
+    assert.equal(response.listeners, 1);
+    assert.match(response.event.createdAt, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(response.event.type, "clear");
+    assert.equal(response.event.display, 2);
+    assert.deepEqual(await clearMessage, response.event);
+});
