@@ -73,7 +73,7 @@ def fade_water_pixels(start_colors, end_colors, duration=WATER_LED_FADE_TIME):
 
 def faucet_lights(duration=None, color=WATER_LED_COLOR, inactive_color=WATER_LED_INACTIVE_COLOR):
     if duration is None:
-        duration = vid_time
+        duration = audio_time
 
     current_colors = [inactive_color] * WATER_LED_COUNT
     set_water_pixels(current_colors)
@@ -125,8 +125,8 @@ requests = connect_wifi()
 
 
 
-def start_video():
-    print("sending video request")
+def start_audio():
+    print("sending audio request")
     url = f"{server}/api/audio/dam/water.mp3"
     print("curl", url)
     response = requests.get(url, headers={"Connection": "close"})
@@ -141,7 +141,7 @@ pot = analogio.AnalogIn(POT_PIN)
 print("Potentiometer test ready")
 print("Pot pin:", POT_PIN)
 
-vid_time = 65
+audio_time = 65
 past_v = -1
 
 try:
@@ -152,8 +152,8 @@ try:
         time.sleep(READ_DELAY)
         if abs(v - past_v) > 0.5: #Currently 0.5 threshold, lower/raise to change sensitivity
             set_status((255, 0, 0))
-            start_video()
-            faucet_lights(vid_time)
+            start_audio()
+            faucet_lights(audio_time)
         else:
             set_status((0, 255, 0))
         past_v = v
